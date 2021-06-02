@@ -1,0 +1,54 @@
+----------------Student--------
+{"firstName": "Payal", 
+"lastName":"Maheshwari",
+"email":  "payal@gmail.com",
+"password": "",
+"role" : "Student", 
+ "grade":  7 
+}
+
+------------------teacher---------------
+{"firstName": "Miss", 
+"lastName":"Jennifer",
+"email":  "jennifer@gmail.com",
+"password":""
+"gender": "Female",
+"role": "Faculty" , 
+ "grade":  7, 
+"grade_subjects" : ["A", "B"],
+"is_deleted": false }
+
+
+--------------Subject------
+{"Name": "IT", 
+ "grade":  7
+}
+
+---------------Courses---
+{   "subject_id": "",
+    "user_id": "",
+    "is_deleted": false,
+    "is_published": false,
+    "title": "IT Info2",
+    "author": "XYZ"
+}
+
+----------Topic without parent id----
+{
+"title":"Topic1",
+"user_id": ""
+"course_id": "",
+ "content":"this is the content"
+}
+
+-------Topic with parent id----
+{
+"title":"Topic1",
+"user_id": "",
+"course_id": "",
+ "content":"this is the content",
+ "parent_id": ""
+}
+
+
+
