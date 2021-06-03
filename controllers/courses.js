@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { Users, Roles } = require('../models/users')
+const Users = require('../models/users').Users
 const Courses = require('../models/courses')
 const Subjects = require('../models/subjects')
 
@@ -17,6 +17,7 @@ courseController.getAll = async (req, res, next) => {
         res.json(allCourses)
     }
     catch (err) {
+        console.log(err);
         res.sendStatus(500)
     }
 };

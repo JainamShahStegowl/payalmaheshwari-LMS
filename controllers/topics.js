@@ -1,6 +1,6 @@
 const Courses = require('../models/courses')
 const Topics = require('../models/topics')
-const { Users, Roles } = require('../models/users')
+const  Users = require('../models/users').Users
 const mongoose = require('mongoose')
 
 
@@ -38,7 +38,7 @@ topicController.getOne = async (req, res) => {
             res.json(topic)
         }
         else {
-            res.Status(404).send("Topic Not Found")
+            res.status(404).send("Topic Not Found")
         }
     }
     catch (err) {

@@ -15,11 +15,13 @@ loginController.login = async (req, res) => {
         const email = req.body.email
         const password = req.body.password
         const user = await Users.findOne({ email: email })
+        
         if (!user || user.is_deleted==true) {
             res.send("User doesnot exists")
         }
         else {
             const userPassword = user.password
+            console.log(userPassword)
             const isCorrect = await bcrypt.compare(password, userPassword)
             if (isCorrect) {
                 const userDetails = {
@@ -35,6 +37,7 @@ loginController.login = async (req, res) => {
         }
     }
     catch (err) {
+        console.log(err);
         res.sendStatus(500)
     }
 }
