@@ -16,7 +16,7 @@ router.post('/',topicController.post)
 
 
 // updating a topic
-router.put('/:id',topicController.put)
+router.put('/:id',topicController.update)
 
 
 // deleting a topic

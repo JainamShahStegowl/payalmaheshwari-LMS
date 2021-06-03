@@ -16,7 +16,7 @@ const subjectController = {};
         res.json(subject)
     }
     catch (err) {
-        res.send('Error' + err)
+        res.sendStatus(500)
     }
 }
 
@@ -34,7 +34,7 @@ const subjectController = {};
         res.json(subject)
     }
     catch (err) {
-        res.send('Error' + err)
+        res.sendStatus(500)
     }
 }
 
@@ -50,10 +50,10 @@ const subjectController = {};
     const subject = new Subjects(req.body)
     try {
         await subject.save()
-        res.send("Posting the data")
+        res.json(subject)
     }
     catch (err) {
-        res.send('Error: ' + err)
+        res.sendStatus(500)
     }
 }
 
@@ -74,7 +74,7 @@ subjectController.update = async (req, res) => {
         let updatedSubject = await subject.save();
         res.send(updatedSubject);
     } catch (err) {
-        res.send('Error: ' + err)
+        res.sendStatus(500)
     }
 }
 /**
@@ -93,7 +93,7 @@ subjectController.delete = async (req, res) => {
         res.send("Deleted Sucessfully")
     }
     catch (err) {
-        res.send('Error' + err)
+        res.sendStatus(500)
     }
 }
 

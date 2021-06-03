@@ -34,12 +34,7 @@
 }
 
 ----------Topic without parent id----
-{
-"title":"Topic1",
-"user_id": ""
-"course_id": "",
- "content":"this is the content"
-}
+c
 
 -------Topic with parent id----
 {

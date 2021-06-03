@@ -8,7 +8,7 @@ const UserSchema = Schema({
   password: {type:String, required:true},
   gender: { type: String, enum: ["Male", "Female", "Other"] },
   role: {type: String, required:true},
-  role_id: [{ type: Schema.Types.ObjectId, ref: 'roles' }],
+  role_id: [{ type: Schema.Types.ObjectId, ref: 'roles', immutable:true }],
   grade: Number,
   grade_subjects: Array,
   is_deleted: { type: Boolean, default: false },
@@ -31,4 +31,4 @@ const RoleSchema = Schema({
 const Users = mongoose.model('Users', UserSchema);
 const Roles = mongoose.model('roles', RoleSchema);
 
-module.exports = { Users, Roles }
+module.exports = { "Users": Users, "Roles": Roles }

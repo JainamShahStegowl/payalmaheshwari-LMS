@@ -8,7 +8,7 @@ const courseSchema = Schema({
   author: { type: String, required: true },
   is_deleted: { type: Boolean, default: false },
   created_at: { type: Date, default: Date.now() },
-  deleted_at: { type: Date, default: Date.now() },
+  deleted_at: { type: Date },
   is_published: { type: Boolean, default: false }
 });
 

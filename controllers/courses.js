@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const { Users, Roles } = require('../models/users')
 const Courses = require('../models/courses')
+const Subjects = require('../models/subjects')
 
 const courseController = {};
 
@@ -12,14 +13,11 @@ const courseController = {};
  */
 courseController.getAll = async (req, res, next) => {
     try {
-        const allCourses = await Courses.find()
-        const courses = allCourses.filter(course => {
-            return course.is_deleted === false
-        })
-        res.json(courses)
+        const allCourses = await Courses.find({ is_deleted: false })
+        res.json(allCourses)
     }
     catch (err) {
-        res.send('Error' + err)
+        res.sendStatus(500)
     }
 };
 
@@ -33,23 +31,18 @@ courseController.getAll = async (req, res, next) => {
 courseController.getOne = async (req, res, next) => {
     try {
         let CourseId = mongoose.Types.ObjectId(req.params.id)
-        Courses.exists(CourseId, async (error, result) => {
-            if (error) {
-                res.send("Invalid CourseId")
-            }
-            else {
-                const course = await Courses.findById(CourseId)
-                if (course.is_deleted === false) {
-                    res.json(course)
-                }
-                else {
-                    res.send("This course has been deleted")
-                }
-            }
-        })
+        let course = await Courses.findById({"_id": CourseId, "is_deleted": false})
+
+        if (course.length<1) {
+            res.sendStatus(404)
+        }
+        else {
+            res.json(course)
+        }
     }
     catch (err) {
-        res.send('Error: ' + err)
+        console.log(err)
+        res.sendStatus(500)
     }
 }
 
@@ -63,18 +56,26 @@ courseController.getOne = async (req, res, next) => {
 
 courseController.post = async (req, res, next) => {
     try {
-        let user = await (await Users.findById(req.body.user_id)).populate('role_id').execPopulate();
-        if (user.role_id[0].name.toLowerCase() == "faculty") {
-            const course = new Courses(req.body)
-            await course.save()
-            res.send("Posting the data")
+        let getUser = await Users.findById(req.body.user_id)
+        let getSubject = await Subjects.findById(req.body.subject_id)
+
+        if (!getUser || !getSubject) {
+            res.status(404).send("Invalid UserId or SubjectId")
         }
         else {
-            res.status(401).send("You are not authorized")
+            let user = await getUser.populate('role_id').execPopulate();
+            if (user.role_id[0].name.toLowerCase() == "faculty") {
+                const course = new Courses(req.body)
+                await course.save()
+                res.json(course)
+            }
+            else {
+                res.sendStatus(401)
+            }
         }
     }
     catch (err) {
-        res.send('Error: ' + err)
+        res.status(500).send(err.message)
     }
 }
 
@@ -91,15 +92,37 @@ courseController.update = async (req, res, next) => {
     try {
         let CourseId = mongoose.Types.ObjectId(req.params.id)
         let course = await Courses.findById(CourseId);
-        course.set(req.body);
-        let updatedcourse = await course.save();
-        res.send(updatedcourse);
-    } catch (err) {
-        if (err instanceof ValidationError) {
-            res.status(400).send("Error in request body data", err)
+        let getUser = await Users.findById(req.body.user_id)
+        let getSubject = await Subjects.findById(req.body.subject_id)
+
+        if (!getUser || !getSubject) {
+            res.status(404).send("Cannot update: User or Subject Not Found")
+        }
+        if (course){
+            course.set(req.body);
+            let updatedcourse = await course.save();
+            res.send(updatedcourse);
+        }
+        else{
+            res.status(404).send("Course Not Found")
+        }
+
+    }
+    catch (err) {
+        if (err.errors) {
+            let errors = []
+            Object.entries(err.errors).forEach(([key, value]) => {
+                if (value.name && value.name === "CastError") {
+                    errors.push({
+                        name: key,
+                        message: value.message
+                    })
+                }
+            })
+            return res.status(400).send(errors)
         }
         else {
-            res.send('Error: ' + err)
+            res.status(500).send(err.message)
         }
     }
 }
@@ -115,20 +138,20 @@ courseController.update = async (req, res, next) => {
 courseController.delete = async (req, res, next) => {
     try {
         let CourseId = mongoose.Types.ObjectId(req.params.id)
-        Courses.exists(CourseId, async (error, result) => {
-            if (error) {
-                res.send("Invalid CourseId")
-            }
-            else {
-                let course = await Courses.findById(CourseId);
-                course.is_deleted = true
-                course.save()
-                res.send("Deleted Sucessfully")
-            }
-        })
+       
+        const course = await Courses.find({"_id":CourseId, "is_deleted": false})
+        if (course.length<1){
+            res.sendStatus(404)
+        }
+        else{
+            course[0].is_deleted = true
+            course[0].save()
+            res.send("Deleted Sucessfully");
+        }
+    
     }
     catch (err) {
-        res.send('Error: ' + err)
+        res.sendStatus(500)
     }
 }
 

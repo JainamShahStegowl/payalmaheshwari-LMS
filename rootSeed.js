@@ -1,21 +1,38 @@
-const { Seeder } = require('mongo-seeding');
-
-
+require('dotenv').config()
 const mongoose = require('mongoose');
-mongoose.connect("mongodb://localhost:27017/LMS" , {useNewUrlParser: true, useUnifiedTopology: true})    
+
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true })
 const db = mongoose.connection
-db.on('open',()=>{
+db.on('open', () => {
     console.log('connected with the database');
 })
 
-let {Users, Roles} = require('./models/users')
+let Roles  = require('./models/users').Roles
 
-const faculty = new Roles({name: "Faculty"})
-const student = new Roles({name: "Student"})
+async function createRoles() {
+    const faculty = await Roles.find({ "name": "faculty" })
+    const student = await Roles.find({ "name": "student" })
+    const Role = await Roles.find()
 
-faculty.save()
-student.save(()=>{
-    console.log("Student and Faculty Role Created")
+    if (faculty.length < 1) {
+        const faculty = new Roles({ "name": "faculty" })
+        await faculty.save()
+        console.log(faculty);
+    }
+    else{
+        console.log(faculty[0]);
+    }
+    if (student.length < 1) {
+        const student = new Roles({ "name": "student" })
+        await student.save()
+        console.log(student);
+    }
+    else{
+        console.log(student[0]);
+    }
     mongoose.disconnect()
-})
+}
+createRoles()
+
+
 

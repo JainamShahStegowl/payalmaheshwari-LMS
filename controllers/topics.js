@@ -1,7 +1,7 @@
 const Courses = require('../models/courses')
 const Topics = require('../models/topics')
-const Users = require('../models/users')
-const mongoose =  require('mongoose')
+const { Users, Roles } = require('../models/users')
+const mongoose = require('mongoose')
 
 
 const topicController = {};
@@ -13,13 +13,13 @@ const topicController = {};
  * @param {Function} next 
  * @description Fetches all topics' data 
  */
- topicController.getAll = async (req, res) => {
+topicController.getAll = async (req, res) => {
     try {
         const topic = await Topics.find()
         res.json(topic)
     }
     catch (err) {
-        res.send('Error' + err)
+        res.sendStatus(500)
     }
 }
 
@@ -30,18 +30,20 @@ const topicController = {};
  * @param {Function} next 
  * @description Fetches one topic
  */
- topicController.getOne = async (req, res) => {
+topicController.getOne = async (req, res) => {
     try {
-        const topic = await Topics.findById(req.params.id)
+        let topicId = mongoose.Types.ObjectId(req.params.id)
+        const topic = await Topics.findById(topicId)
         if (topic) {
             res.json(topic)
         }
         else {
-            res.send("Topic Not Found")
+            res.Status(404).send("Topic Not Found")
         }
     }
     catch (err) {
-        res.send('Error: ' + err)
+        console.log(err);
+        res.sendStatus(500)
     }
 }
 
@@ -53,26 +55,48 @@ const topicController = {};
  * @description Stores the data in database
  */
 
- topicController.post = async (req, res) => {
-    const course = await Courses.findById(req.body.course_id)
-    console.log(course)
-    if (course.user_id == req.body.user_id) {
-        const topic = new Topics(req.body)
-        if (!req.body.parent_id) {
-            topic.parent_id = topic._id
+topicController.post = async (req, res) => {
+    try {
+        let getUser = await Users.findById(req.body.user_id)
+        let getCourse = await Courses.findById(req.body.course_id)
+
+        if (!getUser || !getCourse) {
+            res.status(404).send("Invalid UserId or CourseId")
         }
-        try {
+
+        if (getCourse.user_id == req.body.user_id) {
+            const topic = new Topics(req.body)
+            if (!req.body.parent_id) {
+                topic.parent_id = null
+            }
             await topic.save()
-            res.send("Posting the data")
+            res.json(topic)
         }
-        catch (err) {
-            res.send('Error: ' + err)
+        else {
+            res.status(401).send("unauthorized user to create topic")
         }
     }
-    else {
-        res.status(401).send("unauthorized user to create topic")
+    catch (err) {
+        if (err.errors) {
+            let errors = []
+            Object.entries(err.errors).forEach(([key, value]) => {
+                if (value.name) {
+                    errors.push({
+                        name: key,
+                        message: value.message
+                    })
+                }
+            })
+            return res.status(400).send(errors)
+        }
+        else {
+            res.sendStatus(500)
+        }
     }
 }
+
+
+
 
 
 /**
@@ -82,18 +106,39 @@ const topicController = {};
  * @param {Function} next 
  * @description Gets updated topic data from request body and updates topic using topic Model
  */
- topicController.put =  async (req, res) => {
+topicController.update = async (req, res) => {
     try {
-        let topic = await Topics.findById(req.params.id);
-        topic.set(req.body);
-        let updatedTopic = await topic.save();
-        res.send(updatedTopic);
-    } catch (err) {
-        if (err instanceof ValidationError) {
-            res.status(400).send("Error in request body data", err)
+        let topicId = mongoose.Types.ObjectId(req.params.id)
+        let topic = await Topics.findById(topicId);
+        let getUser = await Users.findById(req.body.user_id)
+        let getCourse = await Courses.findById(req.body.course_id)
+
+        if (!getUser || !getCourse) {
+            res.status(404).send("Cannot update: User or Course Not Found")
+        }
+        if (topic){
+            topic.set(req.body);
+            let updatedTopic = await topic.save();
+            res.send(updatedTopic);
+        }
+        else{
+            res.status(404).send("Topic Not Found")
+        }
+    }   catch (err) {
+        if (err.errors) {
+            let errors = []
+            Object.entries(err.errors).forEach(([key, value]) => {
+                if (value.name) {
+                    errors.push({
+                        name: key,
+                        message: value.message
+                    })
+                }
+            })
+            return res.status(400).send(errors)
         }
         else {
-            res.send('Error: ' + err)
+            res.status(500).send(err.message)
         }
     }
 }
@@ -105,23 +150,15 @@ const topicController = {};
  * @description Deletes a topic by given topic id
  */
 
- topicController.delete =  async (req, res) => {
+topicController.delete = async (req, res) => {
     try {
         const topicId = mongoose.Types.ObjectId(req.params.id)
-        Topics.exists(topicId, async (error, result) => {
-            if (error) {
-                console.log(error)
-                res.send("Invalid TopicId")
-            }
-            else {
-                const topic = await Topics.findById(topicId)
-                await Topics.deleteOne(topic)
-                res.send("Deleted Sucessfully")
-            }
-        })
+        const topic = await Topics.findById(topicId)
+        await Topics.deleteOne(topic)
+        res.send("Deleted Sucessfully")
     }
     catch (err) {
-        res.send('Error: ' + err)
+        res.sendStatus(500)
     }
 }
 

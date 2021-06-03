@@ -1,8 +1,6 @@
-const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { Users, Roles } = require('../models/users');
-const { request } = require('express');
 
 const loginController = {};
 
@@ -37,7 +35,7 @@ loginController.login = async (req, res) => {
         }
     }
     catch (err) {
-        res.send('Error' + err)
+        res.sendStatus(500)
     }
 }
 
