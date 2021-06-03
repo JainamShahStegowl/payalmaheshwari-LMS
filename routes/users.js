@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const userController = require('../controllers/users')
 const authenticate = require('../helpers/jwt')
+const isAdmin = require("../middlewares/isadmin")
 
 
 // fetching all the users
@@ -14,9 +15,9 @@ router.get('/:id', authenticate, userController.getOne)
 router.post('/', userController.post)
 
 // updating a user
-router.put('/:id',authenticate, userController.update)
+router.put('/:id', authenticate, isAdmin, userController.update)
 
 // deleting a user
-router.delete('/:id', authenticate, userController.delete)
+router.delete('/:id', authenticate, isAdmin, userController.delete)
 
 module.exports = router

@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const courseController = require('../controllers/courses')
+const isAdmin = require("../middlewares/isadmin")
 
 
 // Home route
@@ -13,9 +14,9 @@ router.get('/:id', courseController.getOne);
 router.post('/', courseController.post);
 
 // updating a user
-router.put('/:id', courseController.update);
+router.put('/:id',isAdmin, courseController.update);
 
 // deleting a Course
-router.delete('/:id', courseController.delete);
+router.delete('/:id',isAdmin, courseController.delete);
 
 module.exports = router

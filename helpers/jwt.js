@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const Users = require('../models/users').Users;
 
 function authenticateToken(req, res, next) {
 
@@ -7,11 +8,13 @@ function authenticateToken(req, res, next) {
 
     if (token == null) return res.sendStatus(401)
 
-    jwt.verify(token, process.env.SECRET, (err, user) => {
+    jwt.verify(token, process.env.SECRET, async (err, user) => {
         if (err) return res.sendStatus(403)
-        req.user = user
-        console.log(user)
-        next()
+        else{
+            getUser = await Users.find({email:user.email})
+            req.user = getUser[0]
+            next()
+        }       
     })
 }
 

@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const userRoutes = require('./users')
 const courseRoutes = require('./courses')
-const subjectRoutes = require('./subjects')
+const departmentRoutes = require('./departments')
 const topicRoutes = require('./topics')
 const loginRoutes = require('./login')
 const authenticate = require('../helpers/jwt')
@@ -11,7 +11,7 @@ const authenticate = require('../helpers/jwt')
 
 router.use('/users', userRoutes);
 router.use('/courses', authenticate, courseRoutes);
-router.use('/subjects', authenticate, subjectRoutes);
+router.use('/departments', authenticate, departmentRoutes);
 router.use('/topics', authenticate, topicRoutes);
 router.use('/login', loginRoutes)
 

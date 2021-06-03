@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Users = require('../models/users').Users
 const Courses = require('../models/courses')
-const Subjects = require('../models/subjects')
+const Departments = require('../models/departments')
 
 const courseController = {};
 
@@ -58,10 +58,10 @@ courseController.getOne = async (req, res, next) => {
 courseController.post = async (req, res, next) => {
     try {
         let getUser = await Users.findById(req.body.user_id)
-        let getSubject = await Subjects.findById(req.body.subject_id)
+        let getDepartment = await Departments.findById(req.body.department_id)
 
-        if (!getUser || !getSubject) {
-            res.status(404).send("Invalid UserId or SubjectId")
+        if (!getUser || !getDepartment) {
+            res.status(404).send("Invalid UserId or DepartmentId")
         }
         else {
             let user = await getUser.populate('role_id').execPopulate();
@@ -91,13 +91,14 @@ courseController.post = async (req, res, next) => {
  */
 courseController.update = async (req, res, next) => {
     try {
+        console.log(req.user);
         let CourseId = mongoose.Types.ObjectId(req.params.id)
         let course = await Courses.findById(CourseId);
         let getUser = await Users.findById(req.body.user_id)
-        let getSubject = await Subjects.findById(req.body.subject_id)
+        let getDepartment = await Departments.findById(req.body.department_id)
 
-        if (!getUser || !getSubject) {
-            res.status(404).send("Cannot update: User or Subject Not Found")
+        if (!getUser || !getDepartment) {
+            res.status(404).send("Cannot update: User or Department Not Found")
         }
         if (course){
             course.set(req.body);

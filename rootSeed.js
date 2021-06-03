@@ -12,6 +12,7 @@ let Roles  = require('./models/users').Roles
 async function createRoles() {
     const faculty = await Roles.find({ "name": "faculty" })
     const student = await Roles.find({ "name": "student" })
+    const admin = await Roles.find({"name" :"admin"})
     const Role = await Roles.find()
 
     if (faculty.length < 1) {
@@ -29,6 +30,14 @@ async function createRoles() {
     }
     else{
         console.log(student[0]);
+    }
+    if (admin.length < 1) {
+        const admin = new Roles({ "name": "admin" })
+        await admin.save()
+        console.log(admin);
+    }
+    else{
+        console.log(admin[0]);
     }
     mongoose.disconnect()
 }

@@ -53,10 +53,9 @@ userController.getOne = async (req, res) => {
  */
 
 userController.post = async (req, res) => {
-    const user = new Users(req.body)
-    const role = req.body.role.toLowerCase()
-
     try {
+        const user = new Users(req.body)
+        const role = req.body.role.toLowerCase()
         const roleObject = await Roles.find({ "name": role })
         if (roleObject && roleObject.length < 1) {
             res.status(400).send("Enter valid role from Faculty/Student")
@@ -64,12 +63,12 @@ userController.post = async (req, res) => {
         else {
             let email = req.body.email
             let password = req.body.password
-            let emailExists = await Users.find({ "email": email, "is_deleted":false })
+            let emailExists = await Users.find({ "email": email, "is_deleted": false })
             let re = /\S+@\S+\.\S+/;
-        
+
             if (emailExists.length > 0) {
                 res.status(409).send("Email Id already exists")
-            }       
+            }
             else if (!re.test(email)) {
                 res.status(400).send("Email Id Not Valid")
             }
@@ -115,6 +114,7 @@ userController.post = async (req, res) => {
  */
 userController.update = async (req, res) => {
     try {
+
         let userId = mongoose.Types.ObjectId(req.params.id)
         const user = await Users.findById(userId)
         user.set(req.body);

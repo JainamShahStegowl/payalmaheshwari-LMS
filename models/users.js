@@ -10,7 +10,7 @@ const UserSchema = Schema({
   role: {type: String, required:true},
   role_id: [{ type: Schema.Types.ObjectId, ref: 'roles', immutable:true }],
   grade: Number,
-  grade_subjects: Array,
+  grade_Courses: Array,
   is_deleted: { type: Boolean, default: false },
   created_at: { type: Date, default: Date.now() },
   deleted_at: { type: Date }

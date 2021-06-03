@@ -15,17 +15,17 @@
 "gender": "Female",
 "role": "Faculty" , 
  "grade":  7, 
-"grade_subjects" : ["A", "B"],
+"grade_courses" : ["A", "B"],
 "is_deleted": false }
 
 
---------------Subject------
+--------------Departments------
 {"Name": "IT", 
  "grade":  7
 }
 
 ---------------Courses---
-{   "subject_id": "",
+{   "department_id": "",
     "user_id": "",
     "is_deleted": false,
     "is_published": false,
@@ -34,7 +34,12 @@
 }
 
 ----------Topic without parent id----
-c
+{
+"title":"Topic1",
+"user_id": ""
+"course_id": "",
+ "content":"this is the content"
+}
 
 -------Topic with parent id----
 {
@@ -46,4 +51,10 @@ c
 }
 
 
+details for Nakul Dave:
+JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ha3VsQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoibmFrdWwiLCJpYXQiOjE2MjI3MjI1Mjd9.OZ0NcWoxo9aMIzQdaEKAH4ZXITtAimBBGoPpeC_gJZQ
+id: 60b8999f79f99966ac49e5ac
 
+details for Payal Maheshwari
+JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBheWFsQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoicGF5YWwiLCJpYXQiOjE2MjI3MjM4NzZ9.arLEG-yTiGZ0e-1fbhpkRX4x52DCuNtl1af_gJ9AHBk
+id: 60b8b9aa51d4c64fd842ce4e
