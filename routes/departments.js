@@ -8,7 +8,7 @@ const isAdmin = require("../middlewares/isadmin")
 router.get('/', departmentController.getAll)
 
 // fetching one Departments
-router.get('/:id', departmentController.getOne)
+router.get('/:id', isAdmin, departmentController.getOne)
 
 // saving Departments
 router.post('/', departmentController.post)

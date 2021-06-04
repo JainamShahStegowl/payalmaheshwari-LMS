@@ -9,7 +9,7 @@ const isAdmin = require("../middlewares/isadmin")
 router.get('/', authenticate, userController.getAll)
 
 // fetching one user
-router.get('/:id', authenticate, userController.getOne)
+router.get('/:id', authenticate, isAdmin, userController.getOne)
 
 // saving user
 router.post('/', userController.post)

@@ -8,7 +8,7 @@ const isAdmin = require("../middlewares/isadmin")
 router.get('/',courseController.getAll);
 
 // get user route
-router.get('/:id', courseController.getOne);
+router.get('/:id', isAdmin,  courseController.getOne);
 
 // saving Course
 router.post('/', courseController.post);

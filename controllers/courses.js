@@ -13,8 +13,16 @@ const courseController = {};
  */
 courseController.getAll = async (req, res, next) => {
     try {
-        const allCourses = await Courses.find({ is_deleted: false })
-        res.json(allCourses)
+        let getUser = req.user
+        let department_id = await Departments.find({ "grade": getUser.grade})
+        if( getUser.role=="faculty" || getUser.role=="student"){
+            const allCourse = await Courses.find({is_deleted:false, department_id: department_id})
+            res.json(allCourse)
+        }
+        else{
+            const allCourses = await Courses.find({ is_deleted: false })
+            res.json(allCourses)
+        }
     }
     catch (err) {
         console.log(err);
@@ -57,16 +65,18 @@ courseController.getOne = async (req, res, next) => {
 
 courseController.post = async (req, res, next) => {
     try {
-        let getUser = await Users.findById(req.body.user_id)
         let getDepartment = await Departments.findById(req.body.department_id)
 
-        if (!getUser || !getDepartment) {
+        if (!getDepartment) {
             res.status(404).send("Invalid UserId or DepartmentId")
         }
         else {
-            let user = await getUser.populate('role_id').execPopulate();
+            let user = await req.user.populate('role_id').execPopulate();
             if (user.role_id[0].name.toLowerCase() == "faculty") {
                 const course = new Courses(req.body)
+                course.user_id = user._id
+                user.grade_Courses.push(course._id)
+                await user.save()
                 await course.save()
                 res.json(course)
             }
@@ -79,8 +89,6 @@ courseController.post = async (req, res, next) => {
         res.status(500).send(err.message)
     }
 }
-
-
 
 /**
  * 

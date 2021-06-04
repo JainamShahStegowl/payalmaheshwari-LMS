@@ -1,11 +1,10 @@
-const Courses = require('../models/courses')
 const Topics = require('../models/topics')
-const  Users = require('../models/users').Users
+const Users = require('../models/users').Users
+const Courses = require('../models/courses')
+const Departments = require('../models/departments')
 const mongoose = require('mongoose')
 
-
 const topicController = {};
-
 
 /**
  * @param {Object} req 
@@ -15,10 +14,28 @@ const topicController = {};
  */
 topicController.getAll = async (req, res) => {
     try {
-        const topic = await Topics.find()
-        res.json(topic)
+        const getUser = req.user
+        if (getUser.role == "student" || getUser.role == "faculty") {
+            const department = await Departments.find({ "grade": getUser.grade })
+            const courses = await Courses.find({
+                "is_deleted": false, "department_id": department
+            })
+            const courseIds = []
+            for (course in courses) {
+                courseIds.push(courses[course]._id)
+            }
+            console.log(courseIds);
+            const topics = await Topics.find({ "course_id": courseIds })
+            console.log(topics);
+            res.json(topics)
+        }
+        else {
+            const topics = await Topics.find()
+            res.json(topics)
+        }
     }
     catch (err) {
+        console.log(err);
         res.sendStatus(500)
     }
 }
@@ -95,10 +112,6 @@ topicController.post = async (req, res) => {
     }
 }
 
-
-
-
-
 /**
  * 
  * @param {Object} req 
@@ -116,15 +129,15 @@ topicController.update = async (req, res) => {
         if (!getUser || !getCourse) {
             res.status(404).send("Cannot update: User or Course Not Found")
         }
-        if (topic){
+        if (topic) {
             topic.set(req.body);
             let updatedTopic = await topic.save();
             res.send(updatedTopic);
         }
-        else{
+        else {
             res.status(404).send("Topic Not Found")
         }
-    }   catch (err) {
+    } catch (err) {
         if (err.errors) {
             let errors = []
             Object.entries(err.errors).forEach(([key, value]) => {

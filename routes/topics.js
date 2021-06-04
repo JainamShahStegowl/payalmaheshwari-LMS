@@ -9,7 +9,7 @@ router.get('/',topicController.getAll)
 
 
 // fetching one topic
-router.get('/:id',topicController.getOne)
+router.get('/:id',isAdmin, topicController.getOne)
 
 
 // saving topic

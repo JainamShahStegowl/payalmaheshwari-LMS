@@ -13,8 +13,21 @@ const userController = {};
  */
 userController.getAll = async (req, res) => {
     try {
-        const allUsers = await Users.find({ "is_deleted": false })
-        res.json(allUsers)
+        const getUser = req.user
+        if (getUser.role.toLowerCase() == "student") {
+            const userGrade = getUser.grade
+            const allUsers = await Users.find({ "is_deleted": false, "role": "Faculty", "grade": userGrade })
+            res.json(allUsers)
+        }
+        else if (getUser.role.toLowerCase() == "faculty") {
+            const facultyGrade = getUser.grade
+            const allUsers = await Users.find({ "is_deleted": false, "role": "Student", "grade": facultyGrade })
+            res.json(allUsers)
+        }
+        else {
+            const allUsers = await Users.find({ "is_deleted": false })
+            res.json(allUsers)
+        }
     }
     catch (err) {
         res.sendStatus(500)
@@ -61,6 +74,7 @@ userController.post = async (req, res) => {
             res.status(400).send("Enter valid role from Faculty/Student")
         }
         else {
+            user.role = role
             let email = req.body.email
             let password = req.body.password
             let emailExists = await Users.find({ "email": email, "is_deleted": false })
